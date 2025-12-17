@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: build springboot app
-        run: ./mvnw clean package -DskipTests
+        run: mvn clean package -DskipTests
 
       - name: set up docker
         uses: docker/setup-buildx-action@v2
