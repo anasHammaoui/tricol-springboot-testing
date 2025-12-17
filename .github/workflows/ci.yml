@@ -32,7 +32,7 @@ jobs:
 
       - name: build and push docker images
         run: |
-          docker-compose build
+          docker compose build
           docker tag tricol-app ${{ secrets.DOCKER_USERNAME }}/tricol-springboot-api-app:latest
           docker push ${{ secrets.DOCKER_PASSWORD }}/tricol-springboot-api-app:latest
 
