@@ -18,6 +18,7 @@ services:
 
   app:
     build: .
+    image: tricol-app:latest
     container_name: tricol-app
     ports:
       - "8080:8080"
