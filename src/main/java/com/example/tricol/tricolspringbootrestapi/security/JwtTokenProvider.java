@@ -21,7 +21,7 @@ public class JwtTokenProvider {
     private final int jwtExpirationInMs;
     private final int refreshTokenExpirationInMs;
     
-    public JwtTokenProvider(@Value("${app.jwtSecret:mySecretKeyThatIsAtLeast32CharactersLong123456}") String jwtSecret,
+    public JwtTokenProvider(@Value("${app.jwtSecret:48484984984564654iuhogffiuyftyvio498498498484988}") String jwtSecret,
                            @Value("${app.jwtExpirationInMs:86400000}") int jwtExpirationInMs,
                            @Value("${app.refreshTokenExpirationInMs:604800000}") int refreshTokenExpirationInMs) {
         this.jwtSecret = Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
@@ -70,17 +70,6 @@ public class JwtTokenProvider {
         
         return claims.getSubject();
     }
-    
-    public Long getUserIdFromJWT(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(jwtSecret)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        
-        return claims.get("userId", Long.class);
-    }
-    
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().verifyWith(jwtSecret).build().parseSignedClaims(authToken);
