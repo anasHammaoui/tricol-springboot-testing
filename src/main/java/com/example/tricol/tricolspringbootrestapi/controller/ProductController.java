@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Product Management", description = "APIs for managing products in the inventory system")
-@PreAuthorize("hasAnyAuthority('PRODUCTS_READ', 'PRODUCTS_WRITE')")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -65,6 +64,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('PRODUCTS_READ', 'PRODUCTS_WRITE')")
     public ResponseEntity<ProductDTO> getProductById(
             @Parameter(description = "ID of the product to retrieve", required = true, example = "1")
             @PathVariable Long id){
@@ -83,6 +83,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('PRODUCTS_READ', 'PRODUCTS_WRITE')")
     public ResponseEntity<List<ProductDTO>> getProducts(){
         List<ProductDTO> products = productService.getProducts();
         return ResponseEntity.status(HttpStatus.OK).body(products);
@@ -103,6 +104,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUCTS_WRITE')")
     public ResponseEntity<ProductDTO> updateProduct(
             @Parameter(description = "ID of the product to update", required = true, example = "1")
             @PathVariable Long id,
@@ -128,6 +130,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUCTS_WRITE')")
     public ResponseEntity<String> deleteProduct(
             @Parameter(description = "ID of the product to delete", required = true, example = "1")
             @PathVariable Long id) {
@@ -147,6 +150,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/stock/{id}")
+    @PreAuthorize("hasAnyAuthority('STOCK_READ', 'PRODUCTS_READ')")
     public ResponseEntity<Double> getProductStock(
             @Parameter(description = "ID of the product", required = true, example = "1")
             @PathVariable Long id){
@@ -165,6 +169,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/lowstock")
+    @PreAuthorize("hasAnyAuthority('PRODUCTS_READ', 'PRODUCTS_WRITE')")
     public ResponseEntity<List<ProductDTO>> getLowStockProducts(){
         List<ProductDTO> lowStockProducts = productService.getLowStockProducts();
         return ResponseEntity.status(HttpStatus.OK).body(lowStockProducts);

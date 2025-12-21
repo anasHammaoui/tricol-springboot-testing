@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/suppliers")
 @Tag(name = "Supplier Management", description = "APIs for managing suppliers and vendor relationships")
-@PreAuthorize("hasAnyAuthority('SUPPLIERS_READ', 'SUPPLIERS_WRITE')")
 public class SupplierController {
     @Autowired
     private SupplierServiceInterface supplierService;
@@ -64,6 +63,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('SUPPLIERS_READ', 'SUPPLIERS_WRITE')")
     public ResponseEntity<List<SupplierDTO>> getAllSuppliers() {
         List<SupplierDTO> suppliers = supplierService.getSuppliers();
         return ResponseEntity.ok(suppliers);
@@ -82,6 +82,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPPLIERS_READ', 'SUPPLIERS_WRITE')")
     public ResponseEntity<SupplierDTO> getSupplierById(
             @Parameter(description = "ID of the supplier to retrieve", required = true, example = "1")
             @PathVariable Long id) {
@@ -105,6 +106,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('SUPPLIERS_WRITE')")
     public ResponseEntity<SupplierDTO> updateSupplier(
             @Parameter(description = "ID of the supplier to update", required = true, example = "1")
             @PathVariable Long id,
@@ -130,6 +132,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SUPPLIERS_WRITE')")
     public ResponseEntity<String> deleteSupplier(
             @Parameter(description = "ID of the supplier to delete", required = true, example = "1")
             @PathVariable Long id) {
@@ -148,6 +151,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('SUPPLIERS_READ', 'SUPPLIERS_WRITE')")
     public ResponseEntity<List<SupplierDTO>> searchSuppliers(
             @Parameter(description = "Search query for supplier society or contact agent", required = true, example = "ABC Corp")
             @RequestParam("q") String query) {

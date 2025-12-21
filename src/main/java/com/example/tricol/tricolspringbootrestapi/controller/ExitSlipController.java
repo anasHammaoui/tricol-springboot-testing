@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ExitSlipController {
     private final ExitSlipService exitSlipService;
     
     @PostMapping
+    @PreAuthorize("hasAuthority('EXIT_SLIPS_CREATE')")
     public ResponseEntity<ExitSlipResponse> createExitSlip(
             @Valid @RequestBody CreateExitSlipRequest request) {
         ExitSlipResponse response = exitSlipService.createExitSlip(request);
@@ -29,24 +31,28 @@ public class ExitSlipController {
     }
     
     @PostMapping("/{id}/validate")
+    @PreAuthorize("hasAuthority('EXIT_SLIPS_VALIDATE')")
     public ResponseEntity<ExitSlipResponse> validateExitSlip(@PathVariable Long id) {
         ExitSlipResponse response = exitSlipService.validateExitSlip(id);
         return ResponseEntity.ok(response);
     }
     
     @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasAuthority('EXIT_SLIPS_CANCEL')")
     public ResponseEntity<ExitSlipResponse> cancelExitSlip(@PathVariable Long id) {
         ExitSlipResponse response = exitSlipService.cancelExitSlip(id);
         return ResponseEntity.ok(response);
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('EXIT_SLIPS_READ')")
     public ResponseEntity<ExitSlipResponse> getExitSlip(@PathVariable Long id) {
         ExitSlipResponse response = exitSlipService.getExitSlip(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('EXIT_SLIPS_READ')")
     public ResponseEntity<List<ExitSlipResponse>> getAllExitSlips(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String workshop) {

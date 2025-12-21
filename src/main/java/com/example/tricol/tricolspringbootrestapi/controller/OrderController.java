@@ -45,6 +45,7 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ORDERS_WRITE')")
     public ResponseEntity<OrderResponse> create(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Order creation request with supplier and items",
@@ -67,6 +68,7 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ORDERS_READ', 'ORDERS_WRITE')")
     public ResponseEntity<List<OrderResponse>> getAllOrders(){
         List<OrderResponse> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
@@ -85,6 +87,7 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ORDERS_READ', 'ORDERS_WRITE')")
     public ResponseEntity<OrderResponse> getOrderById(
             @Parameter(description = "ID of the order to retrieve", required = true, example = "1")
             @PathVariable Long id){
@@ -107,6 +110,7 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/{id}/receive")
+    @PreAuthorize("hasAuthority('ORDERS_RECEIVE')")
     public ResponseEntity<ReceiveOrderResponse> receiveOrder(
             @Parameter(description = "ID of the order to receive", required = true, example = "1")
             @PathVariable Long id){
@@ -129,6 +133,7 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ORDERS_VALIDATE', 'ORDERS_CANCEL')")
     public ResponseEntity<OrderResponse> updateOrder(
             @Parameter(description = "ID of the order to update", required = true, example = "1")
             @PathVariable Long id,
@@ -143,6 +148,7 @@ public class OrderController {
     }
 
     @GetMapping("/filter/status")
+    @PreAuthorize("hasAnyAuthority('ORDERS_READ', 'ORDERS_WRITE')")
     public ResponseEntity<Object> filterOrdersByStatus(@RequestParam String status) {
         try {
             Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
@@ -159,6 +165,7 @@ public class OrderController {
     }
 
     @GetMapping("/filter/supplier/{supplierId}")
+    @PreAuthorize("hasAnyAuthority('ORDERS_READ', 'ORDERS_WRITE')")
     public ResponseEntity<Object> filterOrdersBySupplier(@PathVariable Long supplierId) {
         try {
             List<OrderResponse> orders = orderService.filterOrdersBySupplier(supplierId);
@@ -172,6 +179,7 @@ public class OrderController {
     }
 
     @GetMapping("/filter/date-range")
+    @PreAuthorize("hasAnyAuthority('ORDERS_READ', 'ORDERS_WRITE')")
     public ResponseEntity<Object> filterOrdersByDateRange(
             @RequestParam String startDate,
             @RequestParam String endDate) {
