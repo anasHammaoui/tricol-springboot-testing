@@ -2,6 +2,7 @@ package com.example.tricol.tricolspringbootrestapi.service.impl;
 
 import com.example.tricol.tricolspringbootrestapi.dto.response.UserResponseDto;
 import com.example.tricol.tricolspringbootrestapi.enums.RoleName;
+import com.example.tricol.tricolspringbootrestapi.exception.ResourceNotFoundException;
 import com.example.tricol.tricolspringbootrestapi.mapper.UserMapper;
 import com.example.tricol.tricolspringbootrestapi.model.RoleApp;
 import com.example.tricol.tricolspringbootrestapi.model.UserApp;
@@ -36,10 +37,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void assignRoleToUser(Long userId, RoleName roleName) {
         UserApp user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         
         RoleApp role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
         
         if (!user.getRoles().contains(role)) {
             user.getRoles().add(role);
@@ -50,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateUserPermission(Long userId, Long permissionId, Boolean granted) {
         UserApp user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         
         UserPermission userPermission = userPermissionRepository
                 .findByUserIdAndPermissionId(userId, permissionId)
@@ -58,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
                     UserPermission newUserPermission = new UserPermission();
                     newUserPermission.setUser(user);
                     newUserPermission.setPermission(permissionRepository.findById(permissionId)
-                            .orElseThrow(() -> new RuntimeException("Permission not found")));
+                            .orElseThrow(() -> new ResourceNotFoundException("Permission not found with id: " + permissionId)));
                     return newUserPermission;
                 });
         

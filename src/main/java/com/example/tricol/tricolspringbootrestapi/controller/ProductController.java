@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Product Management", description = "APIs for managing products in the inventory system")
+@PreAuthorize("hasAnyAuthority('PRODUCTS_READ', 'PRODUCTS_WRITE')")
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -38,6 +40,7 @@ public class ProductController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('PRODUCTS_WRITE')")
     public ResponseEntity<String> createProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Product data to create",

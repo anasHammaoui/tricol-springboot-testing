@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/suppliers")
 @Tag(name = "Supplier Management", description = "APIs for managing suppliers and vendor relationships")
+@PreAuthorize("hasAnyAuthority('SUPPLIERS_READ', 'SUPPLIERS_WRITE')")
 public class SupplierController {
     @Autowired
     private SupplierServiceInterface supplierService;
@@ -39,6 +41,7 @@ public class SupplierController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('SUPPLIERS_WRITE')")
     public ResponseEntity<Supplier> createSupplier(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Supplier data to create",

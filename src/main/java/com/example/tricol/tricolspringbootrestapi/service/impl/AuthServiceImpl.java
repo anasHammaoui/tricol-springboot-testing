@@ -3,6 +3,8 @@ package com.example.tricol.tricolspringbootrestapi.service.impl;
 import com.example.tricol.tricolspringbootrestapi.dto.request.LoginRequest;
 import com.example.tricol.tricolspringbootrestapi.dto.request.RegisterRequest;
 import com.example.tricol.tricolspringbootrestapi.dto.response.JwtResponse;
+import com.example.tricol.tricolspringbootrestapi.exception.DuplicateResourceException;
+import com.example.tricol.tricolspringbootrestapi.exception.ResourceNotFoundException;
 import com.example.tricol.tricolspringbootrestapi.model.UserApp;
 import com.example.tricol.tricolspringbootrestapi.repository.UserRepository;
 import com.example.tricol.tricolspringbootrestapi.security.CustomUserDetails;
@@ -13,6 +15,7 @@ import com.example.tricol.tricolspringbootrestapi.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -64,15 +67,15 @@ public class AuthServiceImpl implements AuthService {
             return new JwtResponse(jwt, refreshToken, user.getId(), 
                                  user.getEmail(), user.getFirstName(), 
                                  user.getLastName(), roles, permissions);
-        } catch (org.springframework.security.authentication.BadCredentialsException e) {
-            throw new RuntimeException("Invalid email or password");
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Invalid email or password");
         }
     }
     
     @Override
     public String register(RegisterRequest registerRequest, HttpServletRequest request) {
         if (existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email is already taken!");
+            throw new DuplicateResourceException("Email is already taken");
         }
         
         UserApp user = createUser(registerRequest);
@@ -85,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse refreshToken(String refreshToken) {
         if (!tokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new BadCredentialsException("Invalid or expired refresh token");
         }
         
         String username = tokenProvider.getUsernameFromJWT(refreshToken);
@@ -134,9 +137,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public UserApp findByEmail(String email) {
-        // Load user with roles only
         UserApp user = userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         
         // Load roles with permissions separately
         List<RoleApp> rolesWithPermissions = userRepository.findRolesWithPermissionsByUserEmail(email);

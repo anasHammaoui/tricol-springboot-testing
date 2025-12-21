@@ -53,11 +53,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/suppliers/**").hasAnyAuthority("SUPPLIERS_READ", "SUPPLIERS_WRITE")
-                .requestMatchers("/products/**").hasAnyAuthority("PRODUCTS_READ", "PRODUCTS_WRITE")
-                .requestMatchers("/orders/**").hasAnyAuthority("ORDERS_READ", "ORDERS_WRITE")
-                .requestMatchers("/exit-slips/**").hasAnyAuthority("EXIT_SLIPS_READ", "EXIT_SLIPS_WRITE")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
