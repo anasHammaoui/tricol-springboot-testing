@@ -39,37 +39,38 @@ public class AuthServiceImpl implements AuthService {
     
     @Override
     public JwtResponse login(LoginRequest loginRequest, HttpServletRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
                             loginRequest.getPassword()
                     )
             );
-            
+
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             String jwt = tokenProvider.generateToken(authentication);
             String refreshToken = tokenProvider.generateRefreshToken(authentication);
-            
+
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .filter(auth -> auth.startsWith("ROLE_"))
                     .map(role -> role.substring(5))
                     .collect(Collectors.toList());
-            
+
             List<String> permissions = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .filter(auth -> !auth.startsWith("ROLE_"))
                     .collect(Collectors.toList());
-            
+
             UserApp user = findByEmail(loginRequest.getEmail());
-            
-            return new JwtResponse(jwt, refreshToken, user.getId(), 
-                                 user.getEmail(), user.getFirstName(), 
+
+            return new JwtResponse(jwt, refreshToken, user.getId(),
+                                 user.getEmail(), user.getFirstName(),
                                  user.getLastName(), roles, permissions);
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid email or password");
-        }
+//        try {
+////
+//        } catch (BadCredentialsException e) {
+//            throw new BadCredentialsException("Invalid email or password");
+//        }
     }
     
     @Override

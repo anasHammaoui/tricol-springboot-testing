@@ -5,6 +5,7 @@ import com.example.tricol.tricolspringbootrestapi.dto.response.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestControllerAdvice(basePackages = "com.example.tricol.tricolspringbootrestapi.controller")
@@ -32,6 +34,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<HashMap<String, String>> handleBadCredentials(BadCredentialsException ex) {
+        HashMap<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        errors.put("status", "401");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+    }
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex,
