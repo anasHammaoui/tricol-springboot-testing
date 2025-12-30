@@ -66,11 +66,7 @@ public class AuthServiceImpl implements AuthService {
             return new JwtResponse(jwt, refreshToken, user.getId(),
                                  user.getEmail(), user.getFirstName(),
                                  user.getLastName(), roles, permissions);
-//        try {
-////
-//        } catch (BadCredentialsException e) {
-//            throw new BadCredentialsException("Invalid email or password");
-//        }
+
     }
     
     @Override

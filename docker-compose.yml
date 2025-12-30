@@ -14,6 +14,24 @@ services:
       timeout: 5s
       retries: 5
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: tricol-keycloak
+    restart: always
+    environment:
+      KC_DB: dev-file
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    command: start-dev --http-port=8180 --health-enabled=true
+    ports:
+      - "8180:8180"
+    healthcheck:
+      test: ["CMD-SHELL", "cat < /dev/null > /dev/tcp/localhost/8180 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
+
   app:
     build: .
     image: tricol-app:latest
@@ -23,12 +41,17 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tricol?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_HIBERNATE_DDL_AUTO: create
       SERVER_SERVLET_CONTEXT_PATH: /tricol/api/v2
+      # Keycloak configuration - use container name for internal communication
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8180/realms/tricol-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8180/realms/tricol-realm/protocol/openid-connect/certs
 
 volumes:
   mysql_data:
