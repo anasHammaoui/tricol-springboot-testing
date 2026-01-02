@@ -25,6 +25,8 @@ services:
     command: start-dev --http-port=8180 --health-enabled=true
     ports:
       - "8180:8180"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
     healthcheck:
       test: ["CMD-SHELL", "cat < /dev/null > /dev/tcp/localhost/8180 || exit 1"]
       interval: 10s
@@ -55,3 +57,4 @@ services:
 
 volumes:
   mysql_data:
+  keycloak_data:
