@@ -3,9 +3,9 @@ name: tricol springboot ci
 on:
   push:
     branches:
+      - main
       - spring-security
-
-jobs:
+    jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
